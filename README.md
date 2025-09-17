@@ -7,5 +7,5 @@ from the opponent’s solution. This design yields three provable guarantees: th
 never worse than the opponent, warm-starting strictly accelerates convergence, and most importantly
 with high probability the algorithm selects the true best candidate graph
 
-https://github.com/Amartya-Roy/Competition_is_the_key/blob/main/competition_is_the_key.png
+![https://github.com/Amartya-Roy/Competition_is_the_key/blob/main/competition_is_the_key.png]()
 
