@@ -34,8 +34,8 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 # -------------------- Config --------------------
 # These can now be overridden by command-line arguments
-DATA_CSV   = "Datasets/asia/data.csv"
-GT_NPY     = "Datasets/asia/adj.npy"      # optional; evaluation only
+DATA_CSV   = "Data/asia/data.csv"
+GT_NPY     = "Data/asia/adj.npy"      # optional; evaluation only
 G_ITER     = 1000                    # GraN-DAG iterations
 
 N_EPISODES = 1000                    # <-- INCREASED
@@ -722,8 +722,8 @@ from castle.algorithms import GraNDAG
 warnings.filterwarnings("ignore", category=UserWarning)
 
 # -------------------- Config --------------------
-DATA_CSV   = "Datasets/Hepar2/hepar2.csv"
-GT_NPY     = "Datasets/Hepar2/hepar2adj.npy"
+DATA_CSV   = "Data/Hepar2/hepar2.csv"
+GT_NPY     = "Data/Hepar2/hepar2adj.npy"
 G_ITER     = 1000
 
 N_EPISODES = 1000
