@@ -214,7 +214,6 @@ class CopulaBIC(GaussianBIC):
 # -------------------- Warm-start (greedy + reversals) --------------------
 def warm_start_greedy_bic(Xva, edge_budget, scorer,
                           max_passes=10, topk_per_pass=15, restarts=10, seed=SEED):
-    # <-- SIMPLIFIED: No need for Xtr/Xva split here, just use validation scorer
     rng = np.random.RandomState(seed)
     p = Xva.shape[1]
 
@@ -311,7 +310,7 @@ class CausalDiscoveryEnv:
         self.action_cost = float(action_cost)
         self._warm_adj = warm_start_adj
 
-        # <-- ADDED: Baseline BIC for reward normalization
+
         self.bic_empty = self.bic_va.bic(np.zeros_like(self.current_adj))
         self.best_bic_so_far = -np.inf
 
@@ -402,8 +401,6 @@ class CausalDiscoveryEnv:
     def _reward(self, prev_adj, new_adj): # <-- CHANGED: New reward logic
         new_bic = self.bic_va.bic(new_adj)
 
-        # Core reward: Normalized BIC score relative to the empty graph.
-        # This provides a stable, positive signal for good graphs.
         score_reward = (new_bic - self.bic_empty) / self.n_nodes
 
         # Bonus for finding a new best graph
