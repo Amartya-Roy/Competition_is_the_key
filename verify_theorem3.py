@@ -1,6 +1,4 @@
-# n_vs_gap_and_error_ddqn_ges.py
-# End-to-end: build fixed candidate set (GES + tiny DDQN), estimate Λ_n and Δ_n,
-# and plot (i) n vs gap, (ii) mis-selection probability vs n with exponential-shape curve.
+
 
 import os, time, random, argparse
 from collections import deque
@@ -14,7 +12,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-# Put this once near your imports (after importing matplotlib.pyplot as plt):
+
 plt.rcParams.update({
     "axes.labelsize": 14,     # default axis label size
     "xtick.labelsize": 12,    # default tick size
@@ -130,7 +128,7 @@ def cam_prune_linear(A, X, th=0.25):
         out[keep, j] = 1
     return out
 
-# ------------------------- GES once (cached) -------------------------
+
 def run_ges_once(X, cache="ges_cache.npy"):
     if cache and os.path.exists(cache):
         try:
@@ -151,7 +149,7 @@ def run_ges_once(X, cache="ges_cache.npy"):
         np.save(cache, A)
     return A
 
-# ------------------------- DDQN (very small) -------------------------
+
 class QNet(nn.Module):
     def __init__(self, state_size, action_size):
         super().__init__()
@@ -317,11 +315,6 @@ def build_candidates(X_train, X_val, use_ges=True, episodes=16, device=torch.dev
             seen.add(key); uniq.append(A)
     return uniq
 
-# --- prerequisites you already have somewhere above ---
-# GaussianBIC (per-sample loglik via node RSS), cam_prune_linear, run_ges_once, ddqn_candidates, etc.
-# C : fixed candidate set (list of adjacency matrices), built once with X_train/X_val
-# X_ref : large fixed validation/holdout pool (e.g., half of your big pool) to estimate μ(A)
-# k(A) : comes from scorer.loglik(A) as the number of parameters used in BIC
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -460,7 +453,7 @@ def joint_plot_theorem3(C, X_ref, Aw, n_list=(800,1200,1600,2000),
     plt.savefig(out, dpi=160)
     print(f"[saved] {out}")
 
-    # Optional: also save the n–gap curve alone
+ 
     plt.figure(figsize=(7.2, 4.4))
     plt.plot(n_list, gaps, "o-", color="C2", label=r"$\widehat{\Delta}_n$")
     plt.xlabel("n", fontsize=14)
