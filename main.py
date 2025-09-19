@@ -33,7 +33,6 @@ from castle.algorithms import GES
 warnings.filterwarnings("ignore", category=UserWarning)
 
 # -------------------- Config --------------------
-# These can now be overridden by command-line arguments
 DATA_CSV   = "Data/asia/data.csv"
 GT_NPY     = "Data/asia/adj.npy"      # optional; evaluation only
 G_ITER     = 1000                    # GraN-DAG iterations
@@ -45,7 +44,7 @@ SEED       = 42
 EDGE_BUDGET_RATIO = 2.0
 LAMBDA_L1         = 0.005              # <-- REDUCED
 ACTION_COST       = 0.01
-CAM_TH            = 0.25               # Default, now adaptive
+CAM_TH            = 0.25              
 
 SCORE_TYPE = "copula"                # "copula" (robust) or "gaussian"
 
@@ -332,8 +331,6 @@ class CausalDiscoveryEnv:
         
         # Pre-compute reachability for faster cycle checks
         G = nx.DiGraph(self.current_adj)
-        # This can be slow for large graphs. For very large graphs, one might
-        # check cycles only *after* an action is attempted. But for p < 100 it's fine.
         paths = dict(nx.all_pairs_shortest_path_length(G))
 
         for action_idx in range(self.n_actions):
@@ -463,7 +460,7 @@ class CausalAgent:
 
     def remember(self, s, a, r, ns, d): self.mem.append((s, a, r, ns, d))
 
-    def act(self, state, valid_mask=None): # <-- CHANGED: Accept action mask
+    def act(self, state, valid_mask=None):
         self._update_eps()
         if random.random() <= self.epsilon:
             if valid_mask is not None and valid_mask.any():
@@ -693,7 +690,7 @@ Causal-Discovery (DQN vs. GraN-DAG) with Copula/Gaussian BIC, CAM pruning, live 
 - EDGE_BUDget_RATIO = 2.0 (denser search)
 - LAMBDA_L1 = 0.005, ACTION_COST = 0.01 (lighter sparsity & edit penalty)
 - max_steps = 20 * n_nodes (longer horizon)
-- Reward: (BIC - BIC_empty) / n_nodes - penalties (clearer objective)
+- Reward: (BIC - BIC_empty) / n_nodes - penalties 
 - Warm-start: more passes/top-k/restarts, can use GraN-DAG as candidate
 - Q-net widened to 512, batch=512, replay buffer=200k
 - CAM_TH = adaptive (selects best BIC from multiple thresholds)
@@ -1189,7 +1186,7 @@ def main(args):
     best_valbic = -np.inf
     best_agent_adj_by_bic = None
     
-    # <-- ADDED: Variables to track the best model by TPR
+   
     best_tpr = -1.0
     best_agent_adj_by_tpr = None
 
@@ -1220,7 +1217,7 @@ def main(args):
                 best_agent_adj_by_bic = A_now.copy()
                 msg += " (* New best BIC *)"
             
-            # <-- ADDED: Check and save the best model by TPR
+    
             if GT is not None:
                 current_metrics = eval_against_gt(A_now, GT)
                 if current_metrics and current_metrics['TPR'] > best_tpr:
@@ -1251,7 +1248,6 @@ def main(args):
         print(f"Agent+CAM:    {eval_against_gt(A_cam_final, GT)}")
         print(f"GraN-DAG:     {eval_against_gt(Gdag_bin, GT)}")
         
-        # <-- ADDED: Final report for the best TPR model
         if best_agent_adj_by_tpr is not None:
             print("\n--- Ground Truth Metrics ---")
             print(f"Best TPR achieved: {best_tpr:.4f}")
@@ -1332,8 +1328,8 @@ colors = [
     "#7f7f7f",  # PC
     "#bcbd22",  # GES
     "#4169E1",  # CORL
-    "#17becf",  # Ours (Gran-DAG) - hatched
-    "#ff7f0e",  # Ours (GES)       - hatched
+    "#17becf",  # Ours (Gran-DAG) 
+    "#ff7f0e",  # Ours (GES)       
 ]
 
 x = np.arange(len(datasets))
