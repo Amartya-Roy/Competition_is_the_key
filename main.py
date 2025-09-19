@@ -1281,78 +1281,101 @@ if __name__ == "__main__":
 # In[ ]:
 
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-# Data
+# ---------------- Data ----------------
 datasets = ["Asia", "Sachs", "Lucas", "Child", "Alarm", "Hepar2", "Dream", "Andes"]
 methods = [
-    "KCRL", "NOTEARS", "GOLEM", "Gran-DAG", "RL-BIC2", "ICALiNGAM", "DirectLiNGAM",
-    "PC", "GES", "CORL", "Ours (Using Gran-DAG)", "Ours (Using GES)"
+    "KCRL",
+    "NOTEARS",
+    "GOLEM",
+    "Gran-DAG",
+    "RL-BIC2",
+    "ICALiNGAM",
+    "DirectLiNGAM",
+    "PC",
+    "GES",
+    "CORL",
+    "Ours (Using Gran-DAG)",
+    "Ours (Using GES)",
 ]
+
 score = {
     "Asia":   [0.52, 0.13, 0.19, 0.42, 0.37, 0.26, 0.57, 0.54, 1.00, np.nan, 0.47, 1.00],
     "Sachs":  [0.32, 0.26, 0.13, 0.30, 0.21, 0.26, 0.23, 0.20, 0.39, 0.18, 0.30, 0.40],
     "Lucas":  [0.35, 0.33, 0.35, 0.23, 0.26, 0.20, 0.32, 0.72, 1.00, np.nan, 0.18, 1.00],
-    "Child":  [0.13, 0.18, 0.12, 0.29, 0.36, 0.24, 0.11, 0.13, 0.17, np.nan, 0.41, 0.18],
+    "Child":  [0.13, 0.18, 0.12, 0.45, 0.30, 0.30, 0.11, 0.13, 0.17, np.nan, 0.47, 0.18],
     "Alarm":  [0.24, 0.26, 0.26, 0.18, 0.20, 0.43, 0.30, 0.36, 0.38, np.nan, 0.26, 0.43],
     "Hepar2": [np.nan, 0.01, np.nan, 0.30, np.nan, 0.24, 0.35, 0.20, 0.42, np.nan, 0.35, 0.43],
     "Dream":  [np.nan, 0.03, np.nan, 0.04, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, 0.11, np.nan],
     "Andes":  [np.nan, 0.03, np.nan, 0.04, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, 0.08, np.nan],
 }
+
 data = np.array([[score[d][i] for d in datasets] for i in range(len(methods))])
 
-# Colors & hatches
-baseline_colors = list(plt.cm.Set2.colors[:10])  # 10 distinct muted colors
-ours_colors = ["#1b9e77", "#d95f02"]
-hatches = [""]*len(methods)
-hatches[-2] = "//"
-hatches[-1] = "\\\\"
+# ---------------- Styling (larger fonts) ----------------
+TITLE_FONTSIZE = 20
+LABEL_FONTSIZE = 18
+TICK_FONTSIZE  = 16
+LEGEND_FONTSIZE = 16
+LEGEND_TITLE_FONTSIZE = 16
 
-# Plot
+colors = [
+    "#1f77b4",  # KCRL
+    "#ff7f0e",  # NOTEARS
+    "#2ca02c",  # GOLEM
+    "#d62728",  # Gran-DAG
+    "#9467bd",  # RL-BIC2
+    "#8c564b",  # ICALiNGAM
+    "#e377c2",  # DirectLiNGAM
+    "#7f7f7f",  # PC
+    "#bcbd22",  # GES
+    "#4169E1",  # CORL
+    "#17becf",  # Ours (Gran-DAG) - hatched
+    "#ff7f0e",  # Ours (GES)       - hatched
+]
+
 x = np.arange(len(datasets))
-width = 0.75/len(methods)
-
-fig, ax = plt.subplots(figsize=(14,6))
+width = 0.065
+fig, ax = plt.subplots(figsize=(16, 8))
 
 for i, method in enumerate(methods):
-    vals = data[i, :]
-    color = ours_colors[0] if ("Ours" in method and "Gran" in method) else \
-            (ours_colors[1] if "Ours" in method else baseline_colors[i % len(baseline_colors)])
-    hatch = hatches[i]
-    x_pos = x + (i - len(methods)/2)*width + width/2
-    # Plot bars, skipping NaNs by replacing with zeros and making them transparent
-    bar_vals = np.nan_to_num(vals, nan=0.0)
-    bars = ax.bar(x_pos, bar_vals, width=width, label=method,
-                  color=color, edgecolor="black", linewidth=0.4, hatch=hatch, alpha=0.85 if "Ours" in method else 0.75)
-    # Hide bars where original was NaN
-    for b, v in zip(bars, vals):
-        if np.isnan(v):
-            b.set_alpha(0.0)
-            b.set_edgecolor((0,0,0,0))
+    vals = data[i]
+    ax.bar(x + i*width - (len(methods)/2)*width, vals, width,
+           label=method,
+           color=colors[i],
+           hatch="//" if "Ours" in method else None,
+           edgecolor="black" if "Ours" in method else None)
 
-# Mark all ties with a star (any method achieving the column max within tolerance)
-tol = 1e-12
-for j in range(len(datasets)):
+# Stars (ties included)
+for j, d in enumerate(datasets):
     col = data[:, j]
-    if np.all(np.isnan(col)): 
-        continue
-    col_max = np.nanmax(col)
-    for i in range(len(methods)):
-        val = data[i, j]
-        if np.isnan(val): 
-            continue
-        if abs(val - col_max) <= tol:
-            x_star = x[j] + (i - len(methods)/2)*width + width/2
-            ax.text(x_star, val + 0.02, "★", ha="center", va="bottom", fontsize=11)
+    max_val = np.nanmax(col)
+    best_methods = np.where(col == max_val)[0]
+    for bm in best_methods:
+        ax.text(x[j] + bm*width - (len(methods)/2)*width, max_val + 0.025,
+                "★", ha="center", va="bottom", fontsize=20, color="black")
 
+# Labels & legend
 ax.set_xticks(x)
-ax.set_xticklabels(datasets, rotation=0)
-ax.set_ylabel("Composite Score")
-ax.set_ylim(0, 1.1)
-ax.set_title("Composite Score by Dataset and Method\n(Ours highlighted; ★ = best per dataset, ties marked)")
-ax.legend(ncol=2, bbox_to_anchor=(1.02, 1), loc="upper left", title="Methods", fontsize="small")
+ax.set_xticklabels(datasets, fontsize=TICK_FONTSIZE)
+ax.set_ylabel("Composite Score", fontsize=LABEL_FONTSIZE)
+ax.set_xlabel("Datasets", fontsize=LABEL_FONTSIZE)
+ax.tick_params(axis="y", labelsize=TICK_FONTSIZE)
+ax.set_title("Composite Score by Dataset and Method\n(Ours highlighted; ★ = best per dataset, ties marked)",
+             fontsize=TITLE_FONTSIZE, pad=12)
+
+leg = ax.legend(title="Methods", fontsize=LEGEND_FONTSIZE, title_fontsize=LEGEND_TITLE_FONTSIZE,
+                bbox_to_anchor=(1.02, 1), loc="upper left", ncol=1, frameon=True)
 plt.tight_layout()
+
+png_path = "composite_grouped_bars_large_fonts.png"
+pdf_path = "composite_grouped_bars_large_fonts.pdf"
+plt.savefig(png_path, dpi=300, bbox_inches="tight")
+plt.savefig(pdf_path, bbox_inches="tight")
+png_path, pdf_path
+
 
 out_path = "composite_grouped_bars_ties_marked.png"
 plt.savefig(out_path, dpi=300, bbox_inches="tight")
