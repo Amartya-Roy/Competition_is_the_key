@@ -9,3 +9,16 @@ with high probability the algorithm selects the true best candidate graph
 
 ![Comparison](https://github.com/Amartya-Roy/Competition_is_the_key/blob/main/competition_is_the_key.png)
 
+
+
+# 0) Install deps (example)
+pip install numpy pandas torch networkx scikit-learn scipy pyyaml castle-algorithms matplotlib
+
+# 1) Simple mode (GES path)
+python main.py --config config.yml --mode simple
+
+# 2) Advanced mode (GraN-DAG-based)
+python main.py --config config.yml --mode advanced
+
+# 3) Plot the grouped-bar figure with ties marked
+python plot_scores.py
