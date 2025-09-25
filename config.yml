@@ -1,0 +1,59 @@
+# =======================
+# DDQN-CD: Configuration
+# =======================
+
+seed: 42
+
+# Data paths (point to your CSV / npy)
+data:
+  # simple mode default (e.g., ASIA)
+  simple_csv: "Data/asia/data.csv"
+  simple_gt:  "Data/asia/adj.npy"
+
+  # advanced mode default (e.g., Hepar2)
+  advanced_csv: "Data/Hepar2/hepar2.csv"
+  advanced_gt:  "Data/Hepar2/hepar2adj.npy"
+
+# Opponents & scoring
+score_type: "copula"   # "copula" or "gaussian"
+grndag_iterations: 1000
+
+# RL training
+episodes: 1000
+eval_every: 20
+
+# Env / reward
+edge_budget_ratio: 2.0
+lambda_l1: 0.005
+action_cost: 0.01
+max_steps_multiplier: 20   # max_steps = multiplier * n_nodes
+
+# Warm-start (greedy BIC refinement)
+warm_start:
+  max_passes: 10
+  topk_per_pass: 15
+  restarts: 10
+
+# CAM pruning
+cam_thresholds: [0.1, 0.2, 0.3, 0.4]
+
+# Q-network / optimization
+qnet:
+  hidden: 512
+  batch_size: 512
+  replay_size: 200000
+  gamma: 0.99
+  tau: 0.005
+  lr: 0.0005
+  eps_start: 1.0
+  eps_end: 0.05
+  eps_decay_steps: 400000
+  lr_step_size: 10000
+  lr_gamma: 0.9
+
+# Outputs
+outputs:
+  save_dir: "runs/ddqn_cd"
+  figure_png: "composite_grouped_bars_large_fonts.png"
+  figure_pdf: "composite_grouped_bars_large_fonts.pdf"
+  figure_ties_png: "composite_grouped_bars_ties_marked.png"
